@@ -38,7 +38,16 @@ class impl{
 int main(){
 	test();
 	
-
+	/*http://m.blog.csdn.net/article/details?id=49339831*/
+	typedef std::shared_ptr<int> intptr;
+	int a=0;
+	/*error*/
+	//intptr p(&a);
+	
+	/*创建一个int类的对象，赋初值为13*/
+     intptr q(new int(13));
+     /*像普通指针一样，使用指针q*/ 
+     cout<<*q<<endl;
 	return 0;
 }
 /*
