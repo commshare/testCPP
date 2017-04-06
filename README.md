@@ -1,1 +1,1 @@
-J:\media\YY\TESTCPP\testCPP
+J:\MYSELF\TESTCPP\testCPP\src
