@@ -39,14 +39,26 @@ func copy(dst, src []T) int copy 方法将类型为 T 的切片从源地址 src 
 */
 func AppendByte(slice []byte, data ...byte) []byte {
 	m := len(slice)
-	n := m + len(data)
+	n := m + len(data) /*最新元素个数*/
+	/*原始slice空间不足*/
 	if n > cap(slice) { // if necessary, reallocate
 		// allocate double what's needed, for future growth.
+		/*重新分配的是n+1 然后乘以2啊，为了以后增长所需，为啥要+1呢*/
 		newSlice := make([]byte, (n+1)*2)
+		/*执行copy啊*/
 		copy(newSlice, slice)
 		slice = newSlice
 	}
-	slice = slice[0:n]
-	copy(slice[m:n], data)
+	/*目前的slice是原始slice从0到n-1这些个位置的元素，所以要写0到n*/
+	slice = slice[0:n] /*这里用的是直接赋值*/
+	/*然后从m到n-1位置进行复制，所以要写m到n*/
+	copy(slice[m:n], data) /*这里用的是copy*/
 	return slice
 }
+
+/*
+[1 2 3 0 0 0 0 0 0 0]   slice打印出来都是带有[]的
+Copied 3 elements
+[1 2 3 4 5 6]
+
+*/
