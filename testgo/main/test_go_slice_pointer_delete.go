@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 /*使用 数组指针类型   ，这是为了可以修改数组内容，slice是值传递的，数组传下去就是一个值副本
 以及使用append来做delete*/
@@ -57,4 +60,52 @@ func main() {
 	del(6, &slice)
 	fmt.Println("now slice : ", slice) /*now slice :  [0 1 2 3 4 5 7 8 9]  确实6被删除了*/
 
+	fmt.Println("testPointer")
+	testPointer()
+
+}
+
+type field struct {
+	name string
+}
+
+func (p *field) print() {
+	fmt.Println(p.name)
+}
+
+/*
+testPointer
+one
+two
+three
+
+*/
+func testPointer() {
+	/*这是一个什么类型啊,貌似data是一个数组，数组的元素是一个field类型的指针*/ /*打印ok*/
+	data := []*field{{"one"}, {"two"}, {"three"}}
+	for _, v := range data {
+		go v.print()
+	}
+
+	time.Sleep(3 * time.Second)
+
+	/*data_1是一个数组，数组元素只是一个field类型*/
+	data_1 := []field{{"one"}, {"two"}, {"three"}}
+	/*这么打印也ok*/
+	for _, v := range data_1 {
+		v := v /*搞一个临时变量*/
+		go v.print()
+	}
+	time.Sleep(3 * time.Second)
+
+	/*这么是不ok的
+	three
+	three
+	three
+
+	*/
+	for _, v := range data_1 {
+		go v.print()
+	}
+	time.Sleep(3 * time.Second)
 }
