@@ -73,7 +73,12 @@ func (p *field) print() {
 	fmt.Println(p.name)
 }
 
-/*
+/* "for"声明中的迭代变量和闭包
+这在Go中是个很常见的技巧。for语句中的迭代变量在每次迭代时被重新使用。这就意味着你
+在for循环中创建的闭包（即函数字面量）将会引用同一个变量（而在那些goroutine开始执行
+时就会得到那个变量的值）。
+
+
 testPointer
 one
 two
