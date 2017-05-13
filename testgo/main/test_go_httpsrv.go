@@ -1,4 +1,4 @@
-/*http://studygolang.com/articles/5316*/
+/*https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/04.1.md*/
 package main
 
 import (
@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -50,9 +51,12 @@ func test(w http.ResponseWriter, r *http.Request) {
 
 	//var option int = 0
 	var optionParam string
+
 	if len(r.Form["option"]) > 0 {
 		optionParam = r.Form["option"][0]
-		fmt.Println("1 optionParam:", optionParam)
+		//	testoptionParam = r.Form["option"][1]
+
+		//fmt.Println("1 optionParam:", optionParam, "testoptionParam:", testoptionParam)
 	}
 
 	if optionParam == "vipstream" {
@@ -62,6 +66,23 @@ func test(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("3 optionParam:", optionParam)
 
+	var req *http.Request
+	req = r
+	str_allow_delete := req.FormValue("allow_deleted")
+	if str_allow_delete == "" {
+		fmt.Println("str_allow_delete is empty")
+	} else {
+		fmt.Println("str_allow_delete is :", str_allow_delete)
+	}
+	param_allowdelted, err := strconv.ParseInt(str_allow_delete, 10, 32)
+	if err != nil {
+		fmt.Println("fail: str_allow_delete :", str_allow_delete, "param_allowdelted :", param_allowdelted)
+	} else {
+		fmt.Println("ok, str_allow_delete :", str_allow_delete, "param_allowdelted :", param_allowdelted)
+	}
+	if param_allowdelted == 1 {
+		fmt.Fprintf(w, "you ask return deleted items")
+	}
 }
 func main() {
 	var err error
@@ -105,4 +126,59 @@ val: "vipstream"
 2 optionParam: "vipstream"
 3 optionParam: "vipstream"
 
+
+
+localhost:9090/test?appid="020"&option=vipstream mystream
+
+$ ./test_go_httpsrv.exe
+map[appid:["020"] option:[vipstream mystream]]
+path /test
+scheme
+[]
+key: appid
+val: "020"
+key: option
+val: vipstream mystream
+2 optionParam: vipstream mystream
+3 optionParam: vipstream mystream
+
+
+localhost:9090/test?appid="020"&option=vipstream mystream
+$ ./test_go_httpsrv.exe
+map[appid:["020"] option:[vipstream mystream]]
+path /test
+scheme
+[]
+key: appid
+val: "020"
+key: option
+val: vipstream mystream
+2 optionParam: vipstream mystream
+3 optionParam: vipstream mystream
+str_allow_delete is empty
+str_allow_delete :  param_allowdelted : 0
+
+
+
+localhost:9090/test?appid="020"&option=vipstream mystream&allow_deleted=1
+
+$ ./test_go_httpsrv.exe
+map[allow_deleted:[1] appid:["020"] option:[vipstream mystream]]
+path /test
+scheme
+[]
+key: appid
+val: "020"
+key: option
+val: vipstream mystream
+key: allow_deleted
+val: 1
+2 optionParam: vipstream mystream
+3 optionParam: vipstream mystream
+str_allow_delete is : 1
+ok, str_allow_delete : 1 param_allowdelted : 1
+
+可以累加写的啊：
+localhost:9090/test?appid="020"&option=vipstream mystream&allow_deleted=1
+Hello wow!you ask return deleted items
 */
