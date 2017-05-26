@@ -60,7 +60,7 @@ func test1() {
 
 	// The `Sub` methods returns a `Duration` representing
 	// the interval between two times.
-	diff := now.Sub(then)
+	diff := now.Sub(then) /* // 返回 now - then */
 	p(diff)
 
 	// We can compute the length of the duration in
@@ -143,6 +143,15 @@ func testTimestamp() {
 	dataTimeStr := time.Unix(sr, 0).Format(timeLayout) //设置时间戳 使用模板格式化为日期字符串
 	fmt.Println(dataTimeStr)
 }
+
+/*时间戳转为日期*/
+func ts2date(ts int64) {
+	timeLayout := "2006-01-02 15:04:05"
+	fmt.Println("input ts: ", ts)
+	date := time.Unix(ts, 0).Format(timeLayout)
+	fmt.Println("date:", date)
+}
+
 func formatUnixTime() {
 	// 获取当前时间，进行格式化
 	fmt.Println(time.Now().Format("2006-01-02 15:04:05"))
@@ -469,6 +478,23 @@ func main() {
 	timeEclapsed()
 	fmt.Println("----------")
 	testSub()
+
+	fmt.Println("--输出时间戳---------")
+	curtime := time.Now().Unix()
+	fmt.Printf("curtime timestamp:[%d]", curtime) /*curtime timestamp:[1495794072]*/
+
+	fmt.Println("---时间戳转为日期---")
+	/*--输出时间戳---------
+	curtime timestamp:[1495794554]---时间戳转为日期---
+	input ts:  1495794554
+	date: 2017-05-26 18:29:14
+	input ts:  1495793954
+	date: 2017-05-26 18:19:14
+	真的是10分钟啊，600秒
+	*/
+	ts2date(curtime)
+	var ts2 = curtime - 600
+	ts2date(ts2)
 }
 
 /*
