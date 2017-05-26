@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
+	"math/big"
+	"strconv"
 	"time"
 )
 
@@ -208,6 +211,248 @@ func getNow() {
 	//    1469581438172080471
 }
 
+func testDiff() {
+	//Add方法和Sub方法是相反的，获取t0和t1的时间距离d是使用Sub，将t0加d获取t1就是使用Add方法
+	k := time.Now()
+
+	//一天之前
+	d, _ := time.ParseDuration("-24h")
+	fmt.Println(k.Add(d))
+
+	//一周之前
+	fmt.Println(k.Add(d * 7))
+
+	//一月之前
+	fmt.Println(k.Add(d * 30))
+
+	/*time.Since(t)是time.Now().Sub(t)的shorthand.*/
+	t1 := time.Now()
+	time.Sleep(5 * time.Second)
+	fmt.Println(time.Since(t1))
+
+}
+func strToTime() {
+
+	//将字符窜转换为Time类型.  Parse(layout, value string) (Time, error)
+	p := fmt.Println
+
+	withNanos := "2006-01-02 15:04:05"
+	t, _ := time.Parse(withNanos, "2013-10-05 18:30:50")
+	p(t.Year())
+}
+func timeAfter() {
+	fmt.Println("the 1")
+	tc := time.After(time.Second) //返回一个time.C这个管道，1秒(time.Second)后会在此管道中放入一个时间点(time.Now())
+	//时间点记录的是放入管道那一刻的时间值
+	fmt.Println("the 2")
+	fmt.Println("the 3")
+	<-tc //阻塞中，直到取出tc管道里的数据
+	fmt.Println("the 4")
+	//【结果】立即打印123，等了1秒不到一点点的时间，打印了4，结束
+	//打印the 1后，获得了一个空管道，这个管道1秒后会有数据进来
+	//打印the 2，（这里可以做更多事情）
+	//打印the 3
+	//等待，直到可以取出管道的数据（取出数据的时间与获得tc管道的时间正好差1秒钟）
+	//打印the 4
+}
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
+}
+func timeEclapsed() {
+	start := time.Now()
+
+	r := new(big.Int)
+	fmt.Println(r.Binomial(1000, 10))
+	elapsed := time.Since(start)
+	log.Printf("Binomial took %s", elapsed)
+}
+func trace(s string) (string, time.Time) {
+	log.Println("START:", s)
+	return s, time.Now()
+}
+
+func un(s string, startTime time.Time) {
+	endTime := time.Now()
+	log.Println("  END:", s, "ElapsedTime in seconds:", endTime.Sub(startTime))
+}
+
+func RoundTime(input float64) int {
+	var result float64
+
+	if input < 0 {
+		result = math.Ceil(input - 0.5)
+	} else {
+		result = math.Floor(input + 0.5)
+	}
+
+	// only interested in integer, ignore fractional
+	i, _ := math.Modf(result)
+
+	return int(i)
+}
+
+func TimeElapsed(inputDate string, full bool) string {
+	var precise [8]string // this an array, not slice
+	var text string
+	var future bool // our crystal ball
+
+	layOut := "02/01/2006 15:04:05" // dd/mm/yyyy hh:mm:ss
+	formattedDate, err := time.Parse(layOut, inputDate)
+
+	if err != nil {
+		panic(err)
+	}
+
+	// get years, months and days
+	// and get hours, minutes, seconds
+	now := time.Now()
+	year2, month2, day2 := now.Date()
+	hour2, minute2, second2 := now.Clock()
+
+	year1, month1, day1 := formattedDate.Date()
+	hour1, minute1, second1 := formattedDate.Clock()
+
+	// are we forecasting the future?
+	if (year2 - year1) < 0 {
+		future = true
+	}
+
+	if (month2 - month1) < 0 {
+		future = true
+	}
+	if (day2 - day1) < 0 {
+		future = true
+	}
+	if (hour2 - hour1) < 0 {
+		future = true
+	}
+	if (minute2 - minute1) < 0 {
+		future = true
+	}
+	if (second2 - second1) < 0 {
+		future = true
+	}
+
+	// convert negative to positive numbers
+	year := math.Abs(float64(int(year2 - year1)))
+	month := math.Abs(float64(int(month2 - month1)))
+	day := math.Abs(float64(int(day2 - day1)))
+	hour := math.Abs(float64(int(hour2 - hour1)))
+	minute := math.Abs(float64(int(minute2 - minute1)))
+	second := math.Abs(float64(int(second2 - second1)))
+
+	week := math.Floor(day / 7)
+
+	// Ouch!, no if-else short hand - see https://golang.org/doc/faq#Does_Go_have_a_ternary_form
+
+	if year > 0 {
+		if int(year) == 1 {
+			precise[0] = strconv.Itoa(int(year)) + " year"
+		} else {
+			precise[0] = strconv.Itoa(int(year)) + " years"
+		}
+	}
+
+	if month > 0 {
+		if int(month) == 1 {
+			precise[1] = strconv.Itoa(int(month)) + " month"
+		} else {
+			precise[1] = strconv.Itoa(int(month)) + " months"
+		}
+	}
+
+	if week > 0 {
+		if int(week) == 1 {
+			precise[2] = strconv.Itoa(int(week)) + " week"
+		} else {
+			precise[2] = strconv.Itoa(int(week)) + " weeks"
+		}
+	}
+
+	if day > 0 {
+		if int(day) == 1 {
+			precise[3] = strconv.Itoa(int(day)) + " day"
+		} else {
+			precise[3] = strconv.Itoa(int(day)) + " days"
+		}
+	}
+
+	if hour > 0 {
+		if int(hour) == 1 {
+			precise[4] = strconv.Itoa(int(hour)) + " hour"
+		} else {
+			precise[4] = strconv.Itoa(int(hour)) + " hours"
+		}
+	}
+
+	if minute > 0 {
+		if int(minute) == 1 {
+			precise[5] = strconv.Itoa(int(minute)) + " minute"
+		} else {
+			precise[5] = strconv.Itoa(int(minute)) + " minutes"
+		}
+	}
+
+	if second > 0 {
+		if int(second) == 1 {
+			precise[6] = strconv.Itoa(int(second)) + " second"
+		} else {
+			precise[6] = strconv.Itoa(int(second)) + " seconds"
+		}
+	}
+
+	for _, v := range precise {
+		if v != "" {
+			// no comma after second
+			if v[len(v)-5:len(v)-1] != "cond" {
+				precise[7] += v + ", "
+			} else {
+				precise[7] += v
+			}
+		}
+	}
+
+	if !future {
+		text = " ago."
+	} else {
+		text = " in future."
+	}
+
+	if full {
+		return precise[7] + text
+	} else {
+		// return the first non-empty position
+		for k, v := range precise {
+			if v != "" {
+				return precise[k] + text
+			}
+		}
+	}
+	return "invalid date"
+}
+
+func testEclapsed() {
+	fmt.Println("The date time stamp now is : ", time.Now())
+	fmt.Println("02 March 1992 10:10 full=true is : ", TimeElapsed("02/03/1992 10:10:10", true))
+	fmt.Println("02 March 1992 10:10 full=false is : ", TimeElapsed("02/03/1992 10:10:10", false))
+
+	fmt.Println("06 May 2020 17:33 full=false is : ", TimeElapsed("06/05/2020 17:33:10", false))
+	fmt.Println("06 May 2020 17:33 full=true is : ", TimeElapsed("06/05/2020 17:33:10", true))
+
+	fmt.Println("06 May 2017 17:33 full=false is : ", TimeElapsed("06/05/2017 17:33:10", false))
+	fmt.Println("06 May 2017 17:33 full=true is : ", TimeElapsed("06/05/2017 17:33:10", true))
+}
+
+func testSub() {
+	t1 := time.Now()
+	/*sleep 是1秒，返回 是 t2.Sub(t1)) : 1.0007107s
+	 */
+	time.Sleep(time.Second)
+	t2 := time.Now()
+	fmt.Println("t2.Sub(t1)) :", t2.Sub(t1))
+}
+
 func main() {
 	test()
 	fmt.Println("------------")
@@ -220,6 +465,10 @@ func main() {
 	timeDurationInSecMicroMill()
 	fmt.Println("----------")
 	testTimestampWithAdd()
+	fmt.Println("---------")
+	timeEclapsed()
+	fmt.Println("----------")
+	testSub()
 }
 
 /*
