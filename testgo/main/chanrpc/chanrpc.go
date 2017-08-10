@@ -20,13 +20,13 @@ type Server struct {
 	// func(args []interface{}) interface{}
 	// func(args []interface{}) []interface{}
 	functions map[interface{}]interface{}
-	ChanCall  chan *CallInfo
+	ChanCall  chan *CallInfo /*一个chan，互斥用？*/
 }
 
 type CallInfo struct {
 	f       interface{}
 	args    []interface{}
-	chanRet chan *RetInfo
+	chanRet chan *RetInfo /*同步用？*/
 	cb      interface{}
 }
 
@@ -50,10 +50,12 @@ type Client struct {
 	pendingAsynCall int
 }
 
+/*纯粹是分配内存啊*/
 func NewServer(l int) *Server {
 	s := new(Server)
-	s.functions = make(map[interface{}]interface{})
-	s.ChanCall = make(chan *CallInfo, l)
+	s.functions = make(map[interface{}]interface{}) //这是一个map
+	/*func make(Type, size IntegerType) Type  https://golang.org/pkg/builtin/#make 这说明make不是返回指针的，就是返回make出来的的Type*/
+	s.ChanCall = make(chan *CallInfo, l) //这是一个chan *CallInfo 类型 ，
 	return s
 }
 
@@ -66,20 +68,24 @@ func assert(i interface{}) []interface{} {
 }
 
 // you must call the function before calling Open and Go
-func (s *Server) Register(id interface{}, f interface{}) {
-	switch f.(type) {
+func (s *Server) Register(id interface{}, f interface{}) { /*给人的感觉是id和f都是任何类型都ok的*/
+	switch f.(type) { /*.(type)是类型断言，配合swtich进行判断  http://studygolang.com/articles/3314*/
+	/*函数的参数是 []interface{} （interface{}数组)*/
 	case func([]interface{}):
+		fmt.Println("func([]interface{}")
 	case func([]interface{}) interface{}:
+		fmt.Println("func([]interface{}) interface{}")
 	case func([]interface{}) []interface{}:
+		fmt.Println("func([]interface{}) []interface{}")
 	default:
 		panic(fmt.Sprintf("function id %v: definition of function is invalid", id))
 	}
 
-	if _, ok := s.functions[id]; ok {
+	if _, ok := s.functions[id]; ok { /*实际是在判断ok  这是map操作*/
 		panic(fmt.Sprintf("function id %v: already registered", id))
 	}
 
-	s.functions[id] = f
+	s.functions[id] = f /*直接map*/
 }
 
 func (s *Server) ret(ci *CallInfo, ri *RetInfo) (err error) {
@@ -92,9 +98,10 @@ func (s *Server) ret(ci *CallInfo, ri *RetInfo) (err error) {
 			err = r.(error)
 		}
 	}()
-
+	/*ci的直接复制给ri*/
 	ri.cb = ci.cb
-	ci.chanRet <- ri
+	/*这是互斥吧，*/
+	ci.chanRet <- ri /*这是*RetInfo类型 ，ri的写入ci的这个retinfo，必需要求RetInfo可以写入？*/
 	return
 }
 

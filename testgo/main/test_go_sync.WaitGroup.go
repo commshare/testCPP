@@ -87,5 +87,6 @@ func main() {
 	waitgroup.Wait() //.Wait()这里会发生阻塞，直到队列中所有的任务结束就会解除阻塞  (计数不为0, 阻塞Wait()的运行。 )
 	fmt.Println("done!")
 
+	//传入一个函数
 	TestFunc("testchan", TestChan)
 }

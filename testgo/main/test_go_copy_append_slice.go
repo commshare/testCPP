@@ -28,6 +28,37 @@ func main() {
 	/*内存会自动扩展的，会返回一个新的slice，追加的元素必需跟原类型相同*/
 	sl3 = append(sl3, 4, 5, 6)
 	fmt.Println(sl3)
+
+	fmt.Println("zhangbin test")
+	var temp []int = []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	fmt.Println("temp len :", len(temp))
+	slice0 := temp[:]
+	fmt.Println("slice0 :", slice0)
+	/*初始化切片s,是数组arr的引用
+	s := arr[startIndex:endIndex] */
+	slice := temp[0:10] /*打印出来是0到9这10个*/
+	slice1 := []int{0, 1, 2}
+	fmt.Println("slice :", slice)
+	for i, v := range slice {
+		fmt.Println("cur v :", v, "cur i :", i)
+	}
+	fmt.Println("slice 1 : ", slice1)
+	for i, v := range slice1 {
+		fmt.Println("slice1 cur v :", v, "cur i :", i)
+	}
+	var slice2 []int /*未指定大小的数组来定义切片*/
+	var slice3 []int = make([]int, 10)
+	slice4 := make([]int, 10)
+	slice5 := make([]int, 5, 10)
+	slice6 := []int{1, 2, 3}
+	fmt.Println("slice 2 : ", slice2)
+	fmt.Println("slice 3 : ", slice3)
+	fmt.Println("slice 4 : ", slice4)
+	fmt.Println("slice 5 : ", slice5)
+	fmt.Println("slice 6 : ", slice6)
+
+	del(6, &slice)
+	fmt.Println("now slice : ", slice)
 }
 
 /* append 在大多数情况下很好用，但是如果你想完全掌控整个追加过程，你可以实现一个这样的 AppendByte 方法
@@ -62,3 +93,14 @@ Copied 3 elements
 [1 2 3 4 5 6]
 
 */
+
+func del(id int, slice *[]int) {
+	fmt.Println("before del : ", slice)
+	for i, v := range *slice {
+		if v == id {
+			(*slice) = append((*slice)[:i], (*slice)[i+1:]...)
+		}
+	}
+
+	fmt.Println("after del : ", slice)
+}

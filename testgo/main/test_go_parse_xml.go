@@ -95,6 +95,9 @@ func main() {
 	fmt.Println(v)
 	TestXml()
 	parseStudyGo()
+
+	address := fmt.Sprintf(":%v", 6060)
+	fmt.Println(address) /*:6060*/
 }
 
 /*

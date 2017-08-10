@@ -30,7 +30,7 @@ import (
 
 const (
 	mq_url_default  = "amqp://guest:guest@localhost:5672/"
-	mq_url_ubuntu16 = "amqp://test:test@172.25.21.13:5672/"
+	mq_url_ubuntu16 = "amqp://test:test@172.25.21.13:5672/" /*我的单机配置，https://github.com/commshare/LearnHardly/tree/master/rabbitmq*/
 )
 
 var (

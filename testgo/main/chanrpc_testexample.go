@@ -11,11 +11,12 @@ func Example() {
 	s := chanrpc.NewServer(10)
 
 	var wg sync.WaitGroup
-	wg.Add(1)
+	wg.Add(1) //每次启动一个go就add
 
 	// goroutine 1
 	go func() {
 		s.Register("f0", func(args []interface{}) {
+			fmt.Println("register f0")
 
 		})
 
@@ -33,7 +34,7 @@ func Example() {
 			return n1 + n2
 		})
 
-		wg.Done()
+		wg.Done() /*计数减去1*/
 
 		for {
 			s.Exec(<-s.ChanCall)
