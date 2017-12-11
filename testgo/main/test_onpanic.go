@@ -11,8 +11,15 @@ func test() {
 	panicOnFail("testpaniconfail")
 	fmt.Println("test test test end---") /*这个不执行的*/
 }
+func hello(){
+	for(;;){
+		fmt.Println("hello")
+	
+	}
+}
 
 func main() {
+	go hello()
 	go test()
 	select {}
 }

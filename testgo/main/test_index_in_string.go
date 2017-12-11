@@ -18,6 +18,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -34,6 +35,13 @@ func main() {
 
 	fmt.Printf("The position of \"Burger\" is: ")
 	fmt.Printf("%d\n", strings.Index(str, "Burger"))
+
+	var str2 = "15013_74617895_74617895_1506787200"
+	fmt.Printf("The position of \"_\" is: ")
+	index := strings.Index(str2, "_")
+	fmt.Printf("%d\n", index)
+	appid := str2[0:index]
+	fmt.Printf("appid is: %s and getAppid %d", appid, getAppid(str2))
 }
 
 /*
@@ -42,5 +50,28 @@ The position of "Marc" is: 8
 The position of the first instance of "Hi" is: 0
 The position of the last instance of "Hi" is: 14
 The position of "Burger" is: -1
+
+*/
+
+func getAppid(str2 string) int64 {
+	index := strings.Index(str2, "_")
+	fmt.Printf("%d\n", index)
+	appid := str2[0:index]
+	fmt.Printf("appid is: %s", appid)
+	int64_appid, _ := strconv.ParseInt(appid, 10, 64)
+	return int64_appid
+}
+
+/*
+http://www.voidcn.com/article/p-rgepaozy-kc.html
+
+#string到int
+int,err:=strconv.Atoi(string)
+#string到int64
+int64, err := strconv.ParseInt(string, 10, 64)
+#int到string
+string:=strconv.Itoa(int)
+#int64到string
+string:=strconv.FormatInt(int64,10)
 
 */
