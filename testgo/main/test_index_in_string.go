@@ -42,6 +42,9 @@ func main() {
 	fmt.Printf("%d\n", index)
 	appid := str2[0:index]
 	fmt.Printf("appid is: %s and getAppid %d", appid, getAppid(str2))
+
+	tsurl := "http://1.2.3.2:4704/692213320842427481_9042_150143_2425503_14516287040.ts?org=man&uuid=a310c09419f94d0fb3f63ebf3b7d6079&ex_aname=15013_xa_69571171_69571171_0_0_0&ex_vname=15013_xv_69571171_69571171_0_0_0&seq=50408102&tk=1d491ab2814040c54d4b0e02b8fd8318&tc=0&r=852x480&topsid=1344673310"
+	testResoultion(tsurl)
 }
 
 /*
@@ -75,3 +78,22 @@ string:=strconv.Itoa(int)
 string:=strconv.FormatInt(int64,10)
 
 */
+
+func testResoultion(tsurl string) {
+	var resolution string /*如r=1280x720 , 异常 r=0x0*/
+	resolutionIndex := strings.Index(tsurl, "r=")
+	if resolutionIndex >= 0 {
+		tmpstr := tsurl[resolutionIndex:]
+		probe := strings.Index(tmpstr, "&")
+		if probe == -1 {
+			resolution = tmpstr
+		} else {
+			if probe > 0 {
+				resolution = tmpstr[0:probe]
+			}
+		}
+		fmt.Printf("\nresolution %v probe %v\n", resolution, probe)
+	} else {
+		fmt.Printf("\nerr : no r= \n")
+	}
+}

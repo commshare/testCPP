@@ -13,6 +13,7 @@ func main() {
 	contentlength := res.ContentLength
 	fmt.Printf("ContentLength:%v \n", contentlength)
 	fmt.Printf("res:%+v \n", res)
+	res.
 
 }
 

@@ -36,6 +36,8 @@ res: 77
 */
 func main() {
 	test3()
+
+	test_16511()
 }
 
 func test1() {
@@ -89,5 +91,28 @@ func test3() {
 	fmt.Println("------------------")
 	str = string([]byte(str)[:index])
 	fmt.Println("now the str:", str)
+
+}
+
+func test_16511() {
+	input := "/xcrs/16511x01_56_32.44.m3u8"
+
+	if strings.Contains(input, "16511") == true {
+		fmt.Println("yes contains 16511")
+	}
+	if strings.Contains(input, "/xcrs") == true && strings.Contains(input, ".m3u8") == true {
+
+		index := strings.Index(input, "/xcrs")
+		tailIndex := strings.Index(input, ".m3u8")
+		fmt.Println("yes contains /xcrs :", index) /*0*/
+		if index == 0 {
+			gotstr := string([]byte(input)[6:])
+			fmt.Println("no /xcrs :", gotstr) /*0*/
+			adderss := string([]byte(input)[6:tailIndex])
+			fmt.Println("address :", adderss) /*0*/
+		}
+	} else {
+		fmt.Println("error")
+	}
 
 }
