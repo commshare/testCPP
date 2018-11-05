@@ -27,7 +27,7 @@ func main() {
 	uri = uri[strings.LastIndex(uri, "/")+1:]
 	/*(32677847_10034_6634930815917905880_2014812193_1502269255_254_10034.ts?org=yyxcrs&uuid=91ac662328654a56a0f37b5948b826a0&seq=36392454&tk=15833be95c14c0695c62e51251aea3f4&tc=0&r=800x600)
 	 */
-	fmt.Printf("uri is (%s)\n", uri)
+	fmt.Printf("from LastIndex+1 :uri is (%s)\n", uri)
 
 	/*uri is (32677847_10034_6634930815917905880_2014812193_1502269255_254_10034)*/
 	uri = uri[:strings.Index(uri, ".")]
@@ -107,6 +107,14 @@ func main() {
 		fmt.Println("get resolution fail")
 	}
 	checknull()
+<<<<<<< HEAD
+=======
+
+	/*http://a.b.c.d/crs_db6888ecd3754e7b9376914410fd9b63.ts?s=34918932&e=35496655*/
+	apath := "http://a.b.c.d/crs_db6888ecd3754e7b9376914410fd9b63.ts?s=34918932&e=35496655"
+	fmt.Println("----TEST getTSName----")
+	fmt.Printf("ts real name:  %s", getTSName(apath))
+>>>>>>> 2e0dbda72b3420acfd314554fc3b05c46df05087
 }
 
 func checknull() {
@@ -142,4 +150,22 @@ func checknull() {
 	} else {
 		fmt.Println("get resolution fail")
 	}
+<<<<<<< HEAD
+=======
+}
+
+/*item.VideoAddress http://a.b.c.d/crs_db6888ecd3754e7b9376914410fd9b63.ts?s=34918932&e=35496655 ,
+get name http://a.b.c.d/crs_db6888ecd3754e7b9376914410fd9b63*/
+func getTSFullName(str string) (name string) {
+	substr := ".ts"
+	index := strings.Index(str, substr)
+	name = string([]byte(str)[:index])
+	return
+}
+
+func getTSName(str string) (name string) {
+	fullname := getTSFullName(str)
+	name = fullname[strings.LastIndex(fullname, "/")+1:]
+	return name + ".ts"
+>>>>>>> 2e0dbda72b3420acfd314554fc3b05c46df05087
 }

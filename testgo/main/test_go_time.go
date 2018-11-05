@@ -495,6 +495,20 @@ func main() {
 	ts2date(curtime)
 	var ts2 = curtime - 600
 	ts2date(ts2)
+
+	test_duraton()
+}
+
+/**/
+func test_duraton() {
+	fmt.Println("-------test ----duration ------")
+	/*	StartTime := 1471657739
+		EndTime := 1471657978*/
+
+	start := time.Now().UnixNano()
+	time.Sleep(1 * time.Second)
+	end := time.Now().UnixNano()
+	fmt.Printf("end - time  %v duration %v \n", end-start, time.Duration(end-start))
 }
 
 /*
