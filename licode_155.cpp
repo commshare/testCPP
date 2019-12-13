@@ -24,6 +24,7 @@ class MinStack {
 	 int size_;
 	 bool first=true; 
 	 int last_oper_;
+	 int tag_array_[MAX_SIZE]; //就0和1 ,1代表该index有效 
 public:
 	
     /** initialize your data structure here. */
@@ -34,6 +35,7 @@ public:
         //最小值是不是不应该赋值的啊，第一次进来才赋值的 
 		//min_ = 0;		 
 		pos_ = 0;
+		memset(tag_array_,0,MAX_SIZE);
     }
     void show()
     {	std::cout <<"--------------"<<std::endl;
@@ -56,27 +58,34 @@ public:
 	void overwritten(int index)
 	{
 			//index 会被覆盖 
-		   std::cout <<"--- index will be overwritten "<< index<<std::endl;
+		   std::cout <<"--- index  "<< index<<std::endl;
 	      //所以要去掉index，如果index值是min
 	      if(array[index ] == min_)		  
 		  {
+		  	  std::cout <<" index "<<index <<" is min ，overwritten  "<< min_<<std::endl;
 		  	 //这个时候通过遍历获取最小值,这样最小值就是除掉覆盖位置其他元素的最小值了 
+		  	 //从头开始 
 			 	int i =0;
-			 	//刚好index就是第一个元素，这样就不准确了 ，或者一直覆盖，但是返回的是历史上的最小值？？？？ 
-			 	if(index == 0)
-			 	{
-			 		i ++;
-				}
-    			min_ = array[i];
-    			std::cout <<"--- reset min to "<< min_<<std::endl;
-    			for(;i<size_;i++)
+    			if(i == index)
     			{
-    			   if(i != index)				   
+    				i++;
+				}
+				//重min为开头的值 
+				min_ = array[i];
+				//从 开始的i开始比较			 
+    			for(;i<MAX_SIZE;i++)
+    			{
+    				
+    			   if(i != index && tag_array_[i]==1)				   
 				   {
 				   	 checkMin(array[i]); 
 				   }	    			  
 				}   
-		  } 
+				std::cout <<"--- reset min to "<< min_<<std::endl;
+		  } else
+		  {
+		  		std::cout <<"---no need to  reset min to "<< min_<<std::endl;
+		  }
 	} 
     void push(int x) {
     	std::cout <<"---push "<<x<<std::endl;
@@ -87,6 +96,7 @@ public:
 	   }
     	//实际插入位置 是index 
        int index = pos_ % MAX_SIZE ;
+       tag_array_[index] =1;
        //新增一个 
        size_ ++ ;
        //新增的这个超过了最大数量，说明这个要覆盖一个已经有的 
@@ -111,33 +121,32 @@ public:
     void pop() {
     	//不需要返回，直接覆盖吧 
         //pop之后就在cur_位置插入 
-        pos_ = cur_; 
+        	std::cout <<"----pop-- begin"<<min_<<std::endl;
+        pos_ = cur_;  
+        std::cout <<" -------out pop "<<array[cur_] <<" cur_ "<<cur_ <<std::endl; 
+        
+        //先置为不可用？ 
+        tag_array_[cur_]=0;
+        
         overwritten(cur_);
-        std::cout <<" --------  pop "<<array[cur_] <<std::endl; 
+     
         //这样来？ 返回出栈之后的上一个元素位置 ？		 
         cur_ = (cur_ -1 ) % MAX_SIZE;
         size_ --;
+    
         show();
+        	std::cout <<"----pop--end set cur_"<<cur_<<std::endl;
     }
     
     int top() {
-    	   std::cout <<"-------- top "<<array[cur_] <<std::endl; 
-    	     show();
+    	std::cout <<"-------- top "<<array[cur_]<<" cur_ "<<cur_ <<std::endl; 
+    	show();
         return array[cur_];
     }
     
     int getMin() {
-    	  show();
-    	  #if 0 
-    	  //这样也不行，因为有的没有数据插入，就乱码了。 
-    	//获取遍历一遍，反正就MAX个元素  
-    	int i =0;
-    	min_ = array[i];
-    	for(;i<MAX_SIZE;i++)
-    	{
-    	   checkMin(array[i]); 
-		}
-		#endif 
+    	//show();
+    		std::cout <<"----getMin--min "<<min_<<std::endl;
         return min_;
     }
 };
@@ -158,7 +167,7 @@ public:
  int main()
  {
  	  MinStack* obj = new MinStack();
-#if 1
+#if 0
  	  push(obj,10);
  	  push(obj,20);
   	  push(obj,30);
@@ -180,8 +189,10 @@ public:
 	   push(obj,-2);
  	  push(obj,0);
   	  push(obj,-3);
-  	    obj->pop();
+  	  obj->getMin(); //  --> 返回 -3.
+  	  obj->pop();
   	    obj->top();
+  	    obj->getMin(); //  --> 返回 -3.
 	 #endif 
       if(obj)
       {
