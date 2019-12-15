@@ -26,6 +26,7 @@ class MinStack {
 	 bool first=true; 
 	 int last_oper_;
 	 int tag_array_[MAX_SIZE]; //就0和1 ,1代表该index有效 
+	 int last_index_; 
 public:
 	
     /** initialize your data structure here. */
@@ -33,6 +34,7 @@ public:
         memset(array,0,MAX_SIZE);
         cur_ = 0;
         size_ = 0;
+        last_index_ =0;
         //最小值是不是不应该赋值的啊，第一次进来才赋值的 
 		//min_ = 0;		 
 		pos_ = 0;
@@ -45,7 +47,7 @@ public:
     	{
     		std::cout <<" i "<<i <<" "<< array[i]<<std::endl;
 		}
-		std::cout <<"------min "<<min_<<std::endl;
+		std::cout <<"------min "<<getMin()<<std::endl;
 			std::cout <<"------size "<<size_<<std::endl;
 		std::cout <<std::endl;
 	}
@@ -56,41 +58,7 @@ public:
        	 min_= x;
 	   }
 	}
-	void overwritten(int index)
-	{
-			//index 会被覆盖 
-		   std::cout <<"--- index  "<< index<<std::endl;
-		   //出现一个bug，全部pop完毕的 时候，不应该有min值，如果按照我的只有pop或者覆盖时min命中 ，这个逻辑就错了，所以min还是要每次都遍历才靠谱 
-		   #if 0 
-	      //所以要去掉index，如果index值是min
-	     // if(array[index ] == min_)		  
-		  {
-		  	  std::cout <<"			 index "<<index <<" is min ，overwritten  "<< min_<<std::endl;
-		  	 //这个时候通过遍历获取最小值,这样最小值就是除掉覆盖位置其他元素的最小值了 
-		  	 //从头开始 
-			 	int i =0;
-    			if(i == index)
-    			{
-    				i++;
-				}
-				//重min为开头的值 
-				min_ = array[i];
-				//从 开始的i开始比较			 
-    			for(;i<MAX_SIZE;i++)
-    			{
-    				
-    			   if(i != index && tag_array_[i]==1)				   
-				   {
-				   	 checkMin(array[i]); 
-				   }	    			  
-				}   
-				std::cout <<"			--- reset min to "<< min_<<std::endl;
-		  } else
-		  {
-		  		std::cout <<"			---no need to  reset min to "<< min_<<std::endl;
-		  }
-		  #endif
-	} 
+
     void push(int x) {
     	std::cout <<"---push "<<x<<std::endl;
        if(first)
@@ -108,7 +76,7 @@ public:
        {
        	  //覆盖之后就是最大值 
 		   size_ =  MAX_SIZE;
-           overwritten(index);
+          // overwritten(index);
 	   }
        //最新的max个元素的最小值 
 	   checkMin(x); 
@@ -125,25 +93,52 @@ public:
     void pop() {
     	//不需要返回，直接覆盖吧 
         //pop之后就在cur_位置插入 
-        std::cout <<"   ----pop-- begin"<<min_<<std::endl;
         pos_ = cur_;  
-        std::cout <<"   ---out pop "<<array[cur_] <<" cur_ "<<cur_ <<std::endl; 
+
+        std::cout <<"   ----pop-- begin min "<<min_ <<" cur_ "<< cur_ <<" out pop "<<array[cur_]<<std::endl;
         
         //先置为不可用？ 
         tag_array_[cur_]=0;
         
-        overwritten(cur_);
-     
-        //这样来？ 返回出栈之后的上一个元素位置 ？		 
-        cur_ = (cur_ -1 ) % MAX_SIZE;
-        size_ --;
+       // overwritten(cur_);
+       //计算cur位置，也就是出栈之后，如果要top该用哪个值 
+       //有可能此时栈空了，那么cur应该是那个？如 
+         size_ --;
+         //这样来？ 返回出栈之后的上一个元素位置 ？	
+		if( cur_ ==0)
+		{
+			if(size_ == 0 )
+			{
+				//没元素了，就在0位置 ，这个时候，top应该返回错误 
+				cur_ = 0;
+			}
+			else
+		    {
+		    	//还有元素，上一个位置是哪里？ 
+		    		cur_ = MAX_SIZE -1; 
+		    
+			 } 
+		}else
+		{
+			// cur为0，算出来是-1啊 TODO ,上面的判断就是为了修复这个问题 
+			  cur_ = (cur_ -1 ) % MAX_SIZE;
+		}
+
+        std::cout<<"    pop ok  former  "<< pos_ <<" cur_ " << cur_ <<std::endl;
+       
     
         show();
-        std::cout <<"  ----pop--end set cur_"<<cur_<<std::endl;
+       // std::cout <<"  ----pop--end set cur_"<<cur_<<std::endl;
     }
     
+    //没有元素的时候，要返回什么？abort？ 
     int top() {
-    	std::cout <<" top "<<array[cur_]<<" cur_ "<<cur_ <<std::endl; 
+    	if(size_ ==0)
+		{
+			std::cout <<"!!!! size is 0 no top " <<std::endl; 
+		 abort(); 
+		 } 
+    	std::cout <<" top begin : value "<<array[cur_]<<" will top out , cur_ "<<cur_ <<std::endl; 
     	show();
         return array[cur_];
     }
@@ -168,7 +163,7 @@ public:
 				   	 checkMin(array[i]); 
 				   }	    			  
 				}   
-				std::cout <<"			--- reset min to "<< min_<<std::endl;
+			//	std::cout <<"			--- reset min to "<< min_<<std::endl;
     		std::cout <<"getMin--min "<<min_<<std::endl;
         return min_;
     }
@@ -206,6 +201,74 @@ public:
       std::cout <<"step "<<step<<" top "<<x <<std::endl; 
 
  }
+ void test11(MinStack* obj)
+ {
+ 	 push(obj,2147483646,1); //1
+	   push(obj,2147483646,2);//2
+	   push(obj,2147483647,3);//3
+  top(obj,4);//4
+       pop(obj,5);//5
+       min(obj,6); //6
+       pop(obj,7);//7
+       min(obj,8); //8
+
+       pop(obj,9);//9
+
+  	    	   push(obj,2147483647,10); //10
+top(obj,11);//11
+  min(obj,12); //12
+	   push(obj, -2147483648,13);//13
+top(obj,14);//14
+          min(obj,15); //15
+ pop(obj,16);//16
+             min(obj,17); //17
+ }
+ void test12(MinStack* obj)
+ {
+ 	 	  push(obj,2,1);
+ 	 	  push(obj,0,2);
+ 	 	   	 	  push(obj,3,3);
+ 	 	   	 	   	 	  push(obj,0,4);
+ 	 	   	 	   	 	  min(obj,5);
+ 	 	   	 	   	 	  pop(obj,6);
+ 	 	   	 	   	 	   min(obj,7);
+ 	 	   	 	   	 	  pop(obj,8);
+
+
+
+
+ }
+ void test9(MinStack* obj)
+ {
+ 	 push(obj,2,1);
+ 	   push(obj,0,2);
+ 	     push(obj,3,3);
+ 	      min(obj,4);
+ 	      	 push(obj,0,5);
+ 	      	  	      min(obj,6);
+ 	      	  	       pop(obj,7);
+ 	      	  	        min(obj,8);
+ 	      	  	         pop(obj,9);
+
+ 	     min(obj,10);
+ }
+ 
+ void test13(MinStack* obj)
+ {
+ 	 push(obj,85,1);
+ 	   push(obj,-99,2);
+ 	     push(obj,67,3);
+ 	      min(obj,4);
+ 	       push(obj,-27,5);
+ 	   push(obj,61,6);
+ 	     push(obj,-97,7);
+ 	      push(obj,-27,8);
+ 	   push(obj,35,9);
+ 	    top(obj,10);
+ 	    push(obj,99,11);
+ 	   push(obj,-66,12);
+ 	     min(obj,13);
+ }
  int main()
  {
  	  MinStack* obj = new MinStack();
@@ -237,25 +300,7 @@ public:
   	    obj->top();
   	    obj->getMin(); //  --> 返回 -3.
   	    #else
-  	   push(obj,2147483646,1); //1
-	   push(obj,2147483646,2);//2
-	   push(obj,2147483647,3);//3
-  top(obj,4);//4
-       pop(obj,5);//5
-       min(obj,6); //6
-       pop(obj,7);//7
-       min(obj,8); //8
-
-       pop(obj,9);//9
-
-  	    	   push(obj,2147483647,10); //10
-top(obj,11);//11
-  min(obj,12); //12
-	   push(obj, -2147483648,13);//13
-top(obj,14);//14
-          min(obj,15); //15
- pop(obj,16);//16
-             min(obj,17); //17
+  	  test13(obj);
 
   	    #endif
 	 #endif 
