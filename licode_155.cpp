@@ -14,9 +14,10 @@ getMin() -- 检索栈中的最小元素。
 2. 1关系到用什么数据结构，比如数组？
 3. 可以用stl么？ 
 */
-#define MAX_SIZE 5 
+//#define MAX_SIZE 5 
 class MinStack {
 	private:
+		static const int MAX_SIZE = 5;
 	int cur_;
 	int min_;
 	int pos_;
@@ -59,10 +60,12 @@ public:
 	{
 			//index 会被覆盖 
 		   std::cout <<"--- index  "<< index<<std::endl;
+		   //出现一个bug，全部pop完毕的 时候，不应该有min值，如果按照我的只有pop或者覆盖时min命中 ，这个逻辑就错了，所以min还是要每次都遍历才靠谱 
+		   #if 0 
 	      //所以要去掉index，如果index值是min
-	      if(array[index ] == min_)		  
+	     // if(array[index ] == min_)		  
 		  {
-		  	  std::cout <<" index "<<index <<" is min ，overwritten  "<< min_<<std::endl;
+		  	  std::cout <<"			 index "<<index <<" is min ，overwritten  "<< min_<<std::endl;
 		  	 //这个时候通过遍历获取最小值,这样最小值就是除掉覆盖位置其他元素的最小值了 
 		  	 //从头开始 
 			 	int i =0;
@@ -81,11 +84,12 @@ public:
 				   	 checkMin(array[i]); 
 				   }	    			  
 				}   
-				std::cout <<"--- reset min to "<< min_<<std::endl;
+				std::cout <<"			--- reset min to "<< min_<<std::endl;
 		  } else
 		  {
-		  		std::cout <<"---no need to  reset min to "<< min_<<std::endl;
+		  		std::cout <<"			---no need to  reset min to "<< min_<<std::endl;
 		  }
+		  #endif
 	} 
     void push(int x) {
     	std::cout <<"---push "<<x<<std::endl;
@@ -121,9 +125,9 @@ public:
     void pop() {
     	//不需要返回，直接覆盖吧 
         //pop之后就在cur_位置插入 
-        	std::cout <<"----pop-- begin"<<min_<<std::endl;
+        std::cout <<"   ----pop-- begin"<<min_<<std::endl;
         pos_ = cur_;  
-        std::cout <<" -------out pop "<<array[cur_] <<" cur_ "<<cur_ <<std::endl; 
+        std::cout <<"   ---out pop "<<array[cur_] <<" cur_ "<<cur_ <<std::endl; 
         
         //先置为不可用？ 
         tag_array_[cur_]=0;
@@ -135,18 +139,37 @@ public:
         size_ --;
     
         show();
-        	std::cout <<"----pop--end set cur_"<<cur_<<std::endl;
+        std::cout <<"  ----pop--end set cur_"<<cur_<<std::endl;
     }
     
     int top() {
-    	std::cout <<"-------- top "<<array[cur_]<<" cur_ "<<cur_ <<std::endl; 
+    	std::cout <<" top "<<array[cur_]<<" cur_ "<<cur_ <<std::endl; 
     	show();
         return array[cur_];
     }
     
     int getMin() {
     	//show();
-    		std::cout <<"----getMin--min "<<min_<<std::endl;
+    			int i =0;
+    		    bool use_first_valid=true;
+			
+			
+				//从 开始的i开始比较			 
+    			for(;i<MAX_SIZE;i++)
+    			{
+    			   if(tag_array_[i]==1)				   
+				   {
+				   	//使用第一个有效值作为min的初始值 
+				   	if(use_first_valid)
+				   	{
+					   	min_ = array[i];
+					   	use_first_valid=false;
+					}
+				   	 checkMin(array[i]); 
+				   }	    			  
+				}   
+				std::cout <<"			--- reset min to "<< min_<<std::endl;
+    		std::cout <<"getMin--min "<<min_<<std::endl;
         return min_;
     }
 };
@@ -159,10 +182,29 @@ public:
  * int param_3 = obj->top();
  * int param_4 = obj->getMin();
  */
- void push( MinStack* obj ,int x)
+ void push( MinStack* obj ,int x,int step)
  {
- 	std::cout <<" push "<<x <<std::endl; 
+    	std::cout <<"step "<<step<<" push "<<x <<std::endl; 
              obj->push(x);
+ }
+  void pop( MinStack* obj ,int step)
+ {
+      
+      std::cout <<"step "<<step<<" pop " <<std::endl; 
+      obj->pop();
+
+ }
+   void min( MinStack* obj ,int step)
+ {
+      int x=       obj->getMin(); 
+      std::cout <<"step "<<step<<" getmin "<<x <<std::endl; 
+
+ }
+    void top( MinStack* obj ,int step)
+ {
+      int x=       obj->top(); 
+      std::cout <<"step "<<step<<" top "<<x <<std::endl; 
+
  }
  int main()
  {
@@ -186,6 +228,7 @@ public:
   	    obj->top();
   	    
 	 #else
+	 #if 0 
 	   push(obj,-2);
  	  push(obj,0);
   	  push(obj,-3);
@@ -193,6 +236,28 @@ public:
   	  obj->pop();
   	    obj->top();
   	    obj->getMin(); //  --> 返回 -3.
+  	    #else
+  	   push(obj,2147483646,1); //1
+	   push(obj,2147483646,2);//2
+	   push(obj,2147483647,3);//3
+  top(obj,4);//4
+       pop(obj,5);//5
+       min(obj,6); //6
+       pop(obj,7);//7
+       min(obj,8); //8
+
+       pop(obj,9);//9
+
+  	    	   push(obj,2147483647,10); //10
+top(obj,11);//11
+  min(obj,12); //12
+	   push(obj, -2147483648,13);//13
+top(obj,14);//14
+          min(obj,15); //15
+ pop(obj,16);//16
+             min(obj,17); //17
+
+  	    #endif
 	 #endif 
       if(obj)
       {

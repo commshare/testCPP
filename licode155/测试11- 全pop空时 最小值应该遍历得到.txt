@@ -1,0 +1,58 @@
+预期 [null,null,null,null,2147483647,null,2147483646,null,2147483646,null,null,2147483647,2147483647,null,-2147483648,-2147483648,null,2147483647]
+
+实际 [null,null,null,null,2147483647,null,2147483646,null,2147483646,null,null,2147483647,2147483646,null,-2147483648,-2147483648,null,2147483647]
+          1     2     3    4       5                6        7              8         9           10   11    12                  13            14        15                16            17        18
+
+
+-1--push 2147483646
+-2--push 2147483646
+-3--push 2147483647
+
+--4------ top 2147483647 cur_ 2
+
+-5---pop-- begin2147483646
+ -------out pop 2147483647 cur_ 2
+--- index  2
+---no need to  reset min to 2147483646
+----pop--end set cur_1
+
+
+-6---getMin--min 2147483646
+
+--7--pop-- begin2147483646
+ -------out pop 2147483646 cur_ 1
+--- index  1
+ index 1 is min ，overwritten  2147483646
+--- reset min to 2147483646
+----pop--end set cur_0
+
+--8--getMin--min 2147483646
+
+--9--pop-- begin2147483646
+ -------out pop 2147483646 cur_ 0
+--- index  0
+ index 0 is min ，overwritten  2147483646
+--- reset min to 2147483646
+----pop--end set cur_-1
+
+
+-10--push 2147483647
+
+---11----- top 2147483647 cur_ 0
+
+--12--getMin--min 2147483646
+
+-13--push -2147483648
+‘
+---14----- top -2147483648 cur_ 1
+
+--15--getMin--min -2147483648
+
+-16---pop-- begin-2147483648
+ -------out pop -2147483648 cur_ 1
+--- index  1
+ index 1 is min ，overwritten  -2147483648
+--- reset min to 2147483647
+
+----pop--end set cur_0
+--17--getMin--min 2147483647
