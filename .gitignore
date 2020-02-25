@@ -1,3 +1,11 @@
+testCPP14/Debug/
+*.pdb
+*.idb
+*.tlog
+*.db
+*.ipch
+*.ilk
+testCPP14/Release/
 *.d
 *.o
 *.so
