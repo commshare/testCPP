@@ -5,6 +5,7 @@ testCPP14/Debug/
 *.db
 *.ipch
 *.ilk
+testCPP14/Debug/
 testCPP14/Release/
 *.d
 *.o
